@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HBS Chief of Staff · Jamie Friedman</title>
+<meta name="description" content="An AI chief of staff for business school: one page for classes, Canvas deadlines, recruiting and email, with an agent that acts on routine work. Built by Jamie Friedman, HBS MBA 2028, and released as a template any HBS student can use.">
+<meta property="og:title" content="HBS Chief of Staff">
+<meta property="og:description" content="An AI chief of staff for business school, built by Jamie Friedman (HBS MBA 2028) and released as a template for classmates.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2316161A'/%3E%3Cpath d='M9 22V10h3.2l3.8 7 3.8-7H23v12h-2.6v-7.6L17 20.6h-2l-3.4-6.2V22z' fill='%23FBFAF7'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+<style>
+/* Layout: a narrow editorial column for the story, widening for the screenshot, the system map and the decision grid. */
+:root{
+  --paper:#FBFAF7; --card:#FFFFFF; --ink:#16161A; --ink-2:#4A4A52; --ink-3:#7A7A83;
+  --rule:#E3E1DB; --rule-2:#EFEDE7;
+  --mkt:#C2410C; --strat:#1D4ED8; --frc:#047857; --tom:#6D28D9; --lead:#BE185D; --fin:#A16207; --rec:#0F766E;
+  --font:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"Cascadia Mono",Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:#131316; --card:#1B1B1F; --ink:#F2F1EE; --ink-2:#B4B3AE; --ink-3:#8A8984;
+    --rule:#2E2E34; --rule-2:#26262B;
+    --mkt:#F97A3D; --strat:#6D9BFF; --frc:#3EBE8B; --tom:#A98BFF; --lead:#F472A6; --fin:#D8A93B; --rec:#45BFB2;
+    color-scheme:dark;
+  }
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);font-variation-settings:"wdth" 100;
+  font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;
+  padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--strat);outline-offset:3px}
+.wide{max-width:1080px;margin:0 auto}
+.narrow{max-width:700px;margin:0 auto}
+
+/* header */
+.top{display:flex;align-items:center;gap:16px;padding-block:20px 18px;border-bottom:1px solid var(--rule)}
+.mark{font-variation-settings:"wdth" 118;font-weight:700;font-size:15px;letter-spacing:-.01em}
+.mark span{color:var(--ink-3);font-weight:500}
+.top nav{margin-left:auto;display:flex;gap:18px;font-size:14px}
+.top nav a{text-decoration:none;color:var(--ink-2)}
+.top nav a:hover{color:var(--ink)}
+@media (max-width:620px){.top nav{display:none}}
+
+/* hero */
+.hero{padding-block:64px 36px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);margin:0 0 18px}
+h1{font-variation-settings:"wdth" 125;font-weight:600;font-size:clamp(40px,7.2vw,84px);line-height:.94;letter-spacing:-.03em;margin:0;text-wrap:balance}
+h1 em{font-style:normal;color:var(--ink-3)}
+.lede{font-size:clamp(18px,2.2vw,21px);color:var(--ink-2);margin:26px 0 0;max-width:40ch;text-wrap:pretty}
+.byline{margin:26px 0 0;font-size:14.5px;color:var(--ink-3)}
+.byline b{color:var(--ink);font-weight:600}
+.ctas{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
+.btn{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:600;text-decoration:none;border-radius:3px;padding:11px 18px;border:1px solid var(--ink)}
+.btn.solid{background:var(--ink);color:var(--paper)}
+.btn.ghost{color:var(--ink);background:transparent}
+.btn:hover{opacity:.88}
+.courses{display:flex;gap:6px;flex-wrap:wrap;margin-top:30px}
+.courses span{font-size:12px;font-weight:700;font-variation-settings:"wdth" 84;border:1px solid currentColor;border-radius:2px;padding:1px 7px}
+
+/* screenshot */
+.shot{margin:18px auto 0;border:1px solid var(--rule);border-radius:6px;overflow:hidden;background:var(--card);box-shadow:0 24px 60px -30px rgba(22,22,26,.35)}
+.shot img{display:block;width:100%;height:auto}
+.cap{font-size:13px;color:var(--ink-3);margin:10px 0 0}
+
+/* sections */
+section{padding-block:72px 0}
+h2{font-variation-settings:"wdth" 118;font-weight:650;font-size:clamp(26px,3.6vw,38px);line-height:1.05;letter-spacing:-.02em;margin:0 0 18px;text-wrap:balance}
+h3{font-size:17px;font-weight:700;margin:0 0 6px;text-wrap:balance}
+p{margin:0 0 14px}
+.muted{color:var(--ink-2)}
+.num{font-variant-numeric:tabular-nums}
+
+/* problem: the five systems */
+.systems{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:4px;overflow:hidden;margin-top:26px}
+.systems div{background:var(--card);padding:14px 14px 16px;min-width:0}
+.systems b{display:block;font-size:14px}
+.systems span{display:block;font-size:13px;color:var(--ink-3);margin-top:3px}
+@media (max-width:760px){.systems{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* what it does */
+.features{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px 34px;margin-top:30px}
+.features div{min-width:0;border-top:2px solid var(--c,var(--ink));padding-top:14px}
+.features p{font-size:15px;color:var(--ink-2);margin:0}
+@media (max-width:860px){.features{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:540px){.features{grid-template-columns:1fr}}
+
+/* system map */
+.map{display:grid;grid-template-columns:1.2fr auto 1fr auto .9fr auto 1fr;align-items:stretch;gap:0;margin-top:30px}
+.col{border:1px solid var(--rule);border-radius:4px;background:var(--card);padding:14px;min-width:0}
+.col h4{margin:0 0 10px;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.col ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.col li{font-size:14px;line-height:1.3}
+.col li small{display:block;color:var(--ink-3);font-size:12px}
+.arrow{display:flex;align-items:center;justify-content:center;padding:0 8px;color:var(--ink-3);font-size:20px}
+.split{display:flex;flex-direction:column;gap:10px}
+.split .col{flex:1}
+@media (max-width:900px){.map{grid-template-columns:1fr}.arrow{transform:rotate(90deg);padding:6px 0}}
+.mapnote{font-size:14px;color:var(--ink-2);margin-top:16px;max-width:70ch}
+
+/* decisions */
+.decisions{list-style:none;margin:30px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:4px;overflow:hidden}
+.decisions li{background:var(--card);padding:22px 22px 24px;min-width:0}
+.decisions p{font-size:15px;color:var(--ink-2);margin:0}
+@media (max-width:760px){.decisions{grid-template-columns:1fr}}
+
+/* template */
+.paths{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:26px}
+.path{border:1px solid var(--rule);border-radius:4px;background:var(--card);padding:20px;min-width:0}
+.path .tag{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);margin:0 0 6px}
+.path p{font-size:15px;color:var(--ink-2);margin:0}
+@media (max-width:700px){.paths{grid-template-columns:1fr}}
+
+/* stack */
+.stack{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.stack span{font-family:var(--mono);font-size:13px;background:var(--rule-2);border-radius:3px;padding:4px 9px}
+
+footer{margin-top:88px;padding-block:22px 40px;border-top:1px solid var(--rule);display:flex;gap:18px;flex-wrap:wrap;font-size:14px;color:var(--ink-3)}
+footer a{color:var(--ink-2)}
+footer .sp{flex:1}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top wide">
+  <div class="mark">HBS Chief of Staff <span>· Jamie Friedman</span></div>
+  <nav aria-label="Sections">
+    <a href="#what">What it does</a>
+    <a href="#how">How it works</a>
+    <a href="#decisions">Decisions</a>
+    <a href="#template">For classmates</a>
+  </nav>
+</header>
+
+<main>
+  <div class="hero wide">
+    <p class="eyebrow">A product I built at Harvard Business School</p>
+    <h1>An AI chief of staff for <em>business school.</em></h1>
+    <p class="lede">One page that runs my day: classes, every Canvas deadline, recruiting and email, with an agent that handles the routine work and never acts on anything I can't undo without my say-so. Then I turned it into a template any HBS student can set up.</p>
+    <p class="byline"><b>Jamie Friedman</b> · HBS MBA 2028 · built in Claude Code, fall 2026</p>
+    <div class="ctas">
+      <a class="btn solid" href="https://github.com/jamiejf13-bit/hbs-chief-of-staff-template" target="_blank" rel="noopener">See the code on GitHub</a>
+      <a class="btn ghost" href="#how">How it works</a>
+    </div>
+    <div class="courses" aria-hidden="true">
+      <span style="color:var(--mkt)">MKT</span><span style="color:var(--strat)">STRAT</span><span style="color:var(--frc)">FRC</span><span style="color:var(--tom)">TOM</span><span style="color:var(--lead)">LEAD</span><span style="color:var(--fin)">FIN1</span><span style="color:var(--rec)">Recruiting</span>
+    </div>
+  </div>
+
+  <figure class="wide" style="margin:0 auto">
+    <div class="shot"><img src="images/console.png" width="1360" height="1080" alt="The console on sample data: a week calendar with color-coded classes, an agent chat box, new 12Twenty events, priority email and new roles."></div>
+    <figcaption class="cap">The console running on sample data. My own instance is password-protected and reads my real accounts.</figcaption>
+  </figure>
+
+  <section class="narrow" id="problem">
+    <h2>The problem: the admin is spread across five systems</h2>
+    <p class="muted">An HBS first year runs six courses with a case almost every day, while recruiting for a summer internship. The information needed to plan a single day lives in five places, none of which talk to each other, and two of which sit behind university single sign-on with no API a student can use.</p>
+  </section>
+  <div class="wide">
+    <div class="systems">
+      <div><b>Canvas</b><span>Cases, problem sets and deadlines for six courses</span></div>
+      <div><b>HBS Outlook</b><span>Class schedule, section and club mail</span></div>
+      <div><b>12Twenty</b><span>Recruiting events and registrations</span></div>
+      <div><b>Gmail</b><span>Personal mail, newsletters, LinkedIn alerts</span></div>
+      <div><b>Google Calendar</b><span>Everything else in my life</span></div>
+    </div>
+  </div>
+
+  <section class="wide" id="what">
+    <div class="narrow" style="margin:0">
+      <h2>What it does</h2>
+      <p class="muted">Every source flows into one page I check from my phone between classes.</p>
+    </div>
+    <div class="features">
+      <div style="--c:var(--strat)"><h3>Plans the day</h3><p>A day, week and month calendar merged from Outlook and Google, and a single to-do list holding every Canvas assignment, grouped by the day it's due.</p></div>
+      <div style="--c:var(--rec)"><h3>Runs recruiting</h3><p>New 12Twenty events matched to my targets, roles from company job boards and LinkedIn alerts, an internship tracker, and contacts worth reaching out to.</p></div>
+      <div style="--c:var(--lead)"><h3>Triages email</h3><p>Mail that wants a reply from both inboxes, and a reading list from my newsletters, rebuilt twice a day so it holds still long enough to finish.</p></div>
+      <div style="--c:var(--frc)"><h3>Coaches participation</h3><p>Counts classes since I last spoke in each course and shows a cold-call risk before each class, against my goal of speaking every two or three sessions.</p></div>
+      <div style="--c:var(--tom)"><h3>Has an agent</h3><p>A chat box backed by Claude with tools: add or update a task, block time for a case, move an event, merge duplicates, sign me up for an event. It acts only on what I ask for, one request at a time.</p></div>
+      <div style="--c:var(--fin)"><h3>Prepares for class</h3><p>A daily run after class files what professors posted and writes study notes for tomorrow's cases, which I use to check my own reading.</p></div>
+    </div>
+  </section>
+
+  <section class="wide" id="how">
+    <div class="narrow" style="margin:0">
+      <h2>How it works</h2>
+      <p class="muted">The hard constraint was that two sources only exist behind a signed-in browser. So the system is split in two: workers that do the reaching, and a website that only ever reads a database.</p>
+    </div>
+    <div class="map" role="img" aria-label="Sources feed two workers, which write to a Postgres database, which the website reads; the website is used from a phone or laptop and sends approvals back.">
+      <div class="col"><h4>Sources</h4><ul>
+        <li>Canvas<small>REST API</small></li>
+        <li>Google Calendar, Gmail<small>OAuth APIs</small></li>
+        <li>HBS Outlook<small>signed-in browser only</small></li>
+        <li>12Twenty<small>signed-in browser only</small></li>
+        <li>Job boards<small>public APIs</small></li>
+      </ul></div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="split">
+        <div class="col"><h4>Cloud worker</h4><ul><li>GitHub Actions<small>API sources, on a schedule, laptop or not</small></li></ul></div>
+        <div class="col"><h4>Laptop worker</h4><ul><li>Node + Playwright<small>browser sources, plus approved actions</small></li></ul></div>
+      </div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="col"><h4>Database</h4><ul><li>Neon Postgres<small>tasks, events, email, roles, the action queue</small></li></ul></div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="col"><h4>Website</h4><ul><li>Next.js on Vercel<small>password-gated, reads only the database</small></li><li>Claude agent<small>tool use over the same data</small></li></ul></div>
+    </div>
+    <p class="mapnote">Approvals travel the other way: I tap “Sign me up” on my phone, the website queues it, and the laptop worker, the only machine with a 12Twenty session, carries it out within a minute. University credentials never leave the laptop; the website holds nothing that could impersonate me.</p>
+  </section>
+
+  <section class="wide" id="decisions">
+    <div class="narrow" style="margin:0">
+      <h2>Product decisions</h2>
+      <p class="muted">Most of the work was deciding what the system should not do. Each of these came from something that went wrong first.</p>
+    </div>
+    <ol class="decisions">
+      <li><h3>One scheduled run, not seven</h3><p>My first version had seven daily automations, and I switched them all off because each one opened a new conversation every day. The fix was one run with one notification. Every new feature now has to fit inside it.</p></li>
+      <li><h3>Nothing irreversible without a tap</h3><p>The system registers me for an event only when I ask for that specific event, and a standing “just sign me up” never carries over. It never sends email: outreach notes are drafted for me to send myself.</p></li>
+      <li><h3>Stale data has to announce itself</h3><p>Every source shows when it last synced, and the page says when the laptop worker is offline. A quiet calendar should mean a quiet day, never a broken sync.</p></li>
+      <li><h3>Respect the platforms</h3><p>No LinkedIn scraping: roles arrive through LinkedIn's own alert emails. 12Twenty is visited gently, because repeated visits trigger a block that lasts more than a day.</p></li>
+      <li><h3>A study partner, not a substitute</h3><p>The case notes quote the assignment, cite every figure and show the arithmetic, so I can check my own reading. They never write anything that gets submitted, and each course's AI policy comes first.</p></li>
+      <li><h3>Defaults that can't be mistaken for data loss</h3><p>The to-do list once defaulted to “through the next class day” and hid ninety of a hundred assignments, which looked like Canvas had stopped syncing. It now defaults to a week and says how many items are further out.</p></li>
+    </ol>
+  </section>
+
+  <section class="wide" id="template">
+    <div class="narrow" style="margin:0">
+      <h2>From one user to a section</h2>
+      <p class="muted">To share it with classmates, I separated the system from my data. The public template is a scrubbed copy with fresh history: every personal detail moved into one settings file, example data in its place, and setup docs written for someone who has never used a terminal.</p>
+    </div>
+    <div class="paths">
+      <div class="path"><p class="tag">Path 1 · about 15 minutes</p><h3>No code, inside Claude</h3><p>A page that runs on each student's own Claude account and reads their Google Calendar and Gmail. Canvas and Outlook arrive as calendar feeds.</p></div>
+      <div class="path"><p class="tag">Path 2 · two to three hours</p><h3>Build your own, guided</h3><p>Copy the template and build the full console in Claude Code, step by step: your own website, database, laptop worker and agent. A first coding project with a useful result.</p></div>
+    </div>
+  </section>
+
+  <section class="wide" id="stack">
+    <h2>Built with</h2>
+    <div class="stack">
+      <span>Next.js 15</span><span>React 19</span><span>TypeScript</span><span>Neon Postgres</span><span>Vercel</span><span>Node.js</span><span>Playwright</span><span>GitHub Actions</span><span>Claude API (tool use)</span><span>Canvas API</span><span>Google Calendar API</span><span>Gmail API</span><span>Claude Code</span>
+    </div>
+  </section>
+</main>
+
+<footer class="wide">
+  <span>Built by Jamie Friedman, HBS MBA 2028.</span>
+  <span class="sp"></span>
+  <a href="https://github.com/jamiejf13-bit/hbs-chief-of-staff-template" target="_blank" rel="noopener">Template on GitHub</a>
+</footer>
+
+</body>
+</html>
