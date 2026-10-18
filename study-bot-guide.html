@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Build a Daily Study Bot · Automating HBS</title>
+<meta name="description" content="A step-by-step guide for HBS students to build one scheduled task that files Canvas materials, writes study notes for tomorrow's cases, keeps a participation log and scans recruiting.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2316161A'/%3E%3Cpath d='M9 22V10h3.2l3.8 7 3.8-7H23v12h-2.6v-7.6L17 20.6h-2l-3.4-6.2V22z' fill='%23FBFAF7'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+<style>
+/* Layout: a single reading column with a sticky step index on wide screens; code and tables scroll inside their own boxes. */
+:root{
+  --paper:#FBFAF7; --card:#FFFFFF; --ink:#16161A; --ink-2:#4A4A52; --ink-3:#7A7A83;
+  --rule:#E3E1DB; --rule-2:#EFEDE7; --ok:#2F7D4F; --strat:#1D4ED8; --alert:#C42B1C; --frc:#047857;
+  --font:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"Cascadia Mono",Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root{--paper:#131316; --card:#1B1B1F; --ink:#F2F1EE; --ink-2:#B4B3AE; --ink-3:#8A8984; --rule:#2E2E34; --rule-2:#26262B;
+    --ok:#5FBF8A; --strat:#6D9BFF; --alert:#FF6B5A; --frc:#3EBE8B; color-scheme:dark}
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;
+  padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+a{color:var(--strat)}
+:focus-visible{outline:2px solid var(--strat);outline-offset:3px}
+.top{max-width:1120px;margin:0 auto;display:flex;align-items:center;gap:16px;padding-block:20px 18px;border-bottom:1px solid var(--rule)}
+.mark{font-variation-settings:"wdth" 118;font-weight:700;font-size:15px;color:var(--ink);text-decoration:none}
+.mark span{color:var(--ink-3);font-weight:500}
+.top .back{margin-left:auto;font-size:14px;color:var(--ink-2);text-decoration:none}
+.layout{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:220px minmax(0,1fr);gap:56px}
+@media (max-width:900px){.layout{grid-template-columns:1fr;gap:0}.toc{display:none}}
+.toc{position:sticky;top:20px;align-self:start;padding-top:56px;font-size:13.5px}
+.toc p{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin:0 0 10px}
+.toc ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.toc a{color:var(--ink-2);text-decoration:none}
+.toc a:hover{color:var(--ink)}
+main{max-width:740px;padding-bottom:40px;min-width:0}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);margin:56px 0 14px}
+h1{font-variation-settings:"wdth" 125;font-weight:600;font-size:clamp(36px,6vw,60px);line-height:.98;letter-spacing:-.025em;margin:0;text-wrap:balance}
+.lede{font-size:19px;color:var(--ink-2);margin:20px 0 0}
+h2{font-variation-settings:"wdth" 118;font-weight:650;font-size:clamp(24px,3.2vw,32px);line-height:1.1;letter-spacing:-.015em;margin:64px 0 14px;text-wrap:balance;scroll-margin-top:20px}
+h2 .n{color:var(--ink-3);margin-right:10px;font-variant-numeric:tabular-nums}
+h3{font-size:17px;margin:28px 0 8px}
+p{margin:0 0 14px}
+ul,ol{margin:0 0 16px;padding-left:22px}
+li{margin-bottom:6px}
+.muted{color:var(--ink-2)}
+code{font-family:var(--mono);font-size:.86em;background:var(--rule-2);padding:1px 5px;border-radius:3px}
+pre{font-family:var(--mono);font-size:13px;line-height:1.55;background:var(--card);border:1px solid var(--rule);border-radius:4px;padding:14px 16px;overflow-x:auto;margin:0 0 18px;white-space:pre}
+pre.wrap{white-space:pre-wrap}
+.callout{border:1px solid var(--rule);border-left:3px solid var(--ok);border-radius:3px;background:var(--card);padding:14px 16px;margin:18px 0}
+.callout.warn{border-left-color:var(--alert)}
+.callout.tip{border-left-color:var(--strat)}
+.callout p:last-child,.callout ul:last-child{margin-bottom:0}
+.tbl{overflow-x:auto;margin:0 0 18px;border:1px solid var(--rule);border-radius:4px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-top:1px solid var(--rule-2)}
+th{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);border-top:0;background:var(--paper)}
+td:first-child{font-weight:600}
+.copyrow{display:flex;align-items:center;gap:10px;margin:0 0 6px;font-size:13px;color:var(--ink-3)}
+.copyrow button{font:inherit;font-size:13px;border:1px solid var(--rule);background:transparent;color:var(--ink-2);border-radius:3px;padding:3px 10px;cursor:pointer}
+footer{max-width:1120px;margin:40px auto 0;padding-block:22px 40px;border-top:1px solid var(--rule);font-size:14px;color:var(--ink-3);display:flex;gap:16px;flex-wrap:wrap}
+footer a{color:var(--ink-2)}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a class="mark" href="/">Automating HBS <span>· study bot guide</span></a>
+  <a class="back" href="/#tip1">← Back to the project</a>
+</header>
+
+<div class="layout">
+  <nav class="toc" aria-label="Steps">
+    <p>On this page</p>
+    <ol>
+      <li><a href="#get">What you get</a></li>
+      <li><a href="#before">Before you start</a></li>
+      <li><a href="#s1">1. Folder structure</a></li>
+      <li><a href="#s2">2. Participation tracker</a></li>
+      <li><a href="#s3">3. Running notes per course</a></li>
+      <li><a href="#s4">4. Connect laptop and browser</a></li>
+      <li><a href="#s5">5. Where professors post</a></li>
+      <li><a href="#s6">6. The context file</a></li>
+      <li><a href="#s7">7. The two skills</a></li>
+      <li><a href="#s8">8. The scheduled task</a></li>
+      <li><a href="#s9">9. Logging class in one line</a></li>
+      <li><a href="#gotchas">Things that go wrong</a></li>
+      <li><a href="#iterate">How to iterate</a></li>
+      <li><a href="#limits">Honest limits</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <p class="eyebrow">Automating HBS · full guide</p>
+    <h1>Build a daily study bot for HBS</h1>
+    <p class="lede">One scheduled task, running on your laptop every weekday after class. It files what your professors post to Canvas, writes study notes for tomorrow's cases, keeps a participation log honest, and scans recruiting, then sends you one message. This is the full build, in the order it has to happen, including the mistakes that cost the most time to find.</p>
+
+    <div class="callout">
+      <p><b>A study partner, not a substitute.</b> Read the case and form your own view first; use the notes to check your thinking. The bot never writes anything you submit. Read each course's AI policy before you start and follow it: some permit AI on problem sets and bar it on exams, and some assignment instructions bar help from classmates and TFs without mentioning AI. Read the policy rather than guessing in either direction.</p>
+    </div>
+
+    <div class="callout tip">
+      <p><b>Tip:</b> you can open Claude in Chrome on this page and ask it to walk you through, or do, each step. It checks with you before anything important.</p>
+    </div>
+
+    <h2 id="get">What you get</h2>
+    <p>One task fires on weekdays shortly after your last class and does four jobs in a single run. Everything it produces lands in one folder, and it pings your phone once.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Part</th><th>What it produces</th><th>What it needs from you</th></tr></thead>
+      <tbody>
+        <tr><td>Canvas filing</td><td>Every file posted since yesterday, downloaded and filed in the right course folder, with post-class slides quoted into a running notes doc per course</td><td>Nothing, once set up</td></tr>
+        <tr><td>Study notes</td><td>For each of tomorrow's cases: the assignment questions word for word, key figures with the exhibit cited, arithmetic worked step by step, and the strongest argument on each side</td><td>Reading the case yourself; correcting the format for the first few weeks</td></tr>
+        <tr><td>Participation log</td><td>A row per class with what you said and how it landed, plus a dashboard of where you've gone quiet</td><td>A one-line note after class</td></tr>
+        <tr><td>Recruiting scan</td><td>New events matching your focus, written to a watchlist, with deadlines inside three days flagged</td><td>Staying signed in to 12Twenty</td></tr>
+      </tbody>
+    </table></div>
+    <p><b>Two design decisions matter more than anything else.</b></p>
+    <ul>
+      <li><b>One scheduled task, not six.</b> Every scheduled task opens a fresh conversation each time it runs, so six daily tasks means six new conversations a day. That volume is what makes people switch the whole thing off. Build one task that does everything, with one notification.</li>
+      <li><b>State lives in files, never in a conversation.</b> Every run starts with no memory of the last one. Your tracker and a context file are the only continuity, so anything the next run should know has to be written to disk.</li>
+    </ul>
+
+    <h2 id="before">Before you start</h2>
+    <ul>
+      <li><b>The Claude desktop app</b>, on the laptop where your school files live, on a plan that includes scheduled tasks. The laptop has to be awake, with the app open, when the task runs.</li>
+      <li><b>The Claude in Chrome extension.</b> Canvas and 12Twenty sit behind university sign-on, and the extension acts in your real, signed-in Chrome. There's no Canvas API key a student can get on their own, so the browser is the route.</li>
+      <li><b>One cloud-synced folder</b> for school files (OneDrive, iCloud Drive or Dropbox), so files reach your phone. Exactly one copy.</li>
+      <li><b>About three hours</b>: a first sitting of about 90 minutes, then corrections as you go.</li>
+    </ul>
+    <p class="muted">Two things to know first: a long run occasionally loses its connection partway and needs a retry, and the system only sees what your professors actually post. Some post everything; some post very little.</p>
+
+    <h2 id="s1"><span class="n">1</span>Build the folder structure</h2>
+    <p>Pick one root folder and never use a second. Build this by hand before involving Claude; the task will follow it exactly and won't reorganize it.</p>
+<pre>HBS\
+  00 Start Here\            Claude Context.md
+  01 Master Tracker\        Master Tracker.xlsx
+  02 Courses\
+    &lt;COURSE&gt;\
+      Admin\
+      Class Material\       one subfolder per case
+      Core Curriculum Readings\
+      Wrap Slides\          every post-class deck for the course, flat
+      &lt;COURSE&gt; - Running Class Notes.docx
+  03 Section\
+  04 Takeaways Digests\
+  05 Recruiting\</pre>
+    <ul>
+      <li><b>All wrap slides for a course go in one flat folder</b>, not inside each case folder. When you revise for a midterm you want every takeaway deck in one place, in order.</li>
+      <li><b>Case materials go in <code>Class Material\&lt;Case&gt;\</code></b>: the case PDF, exhibits, your study notes, your own notes. One folder per case.</li>
+    </ul>
+    <div class="callout warn"><p><b>The expensive mistake is two copies.</b> If you start in Google Drive and later move to OneDrive, delete or rename the old folder the same day. A task reading one copy while you write to the other will drift apart silently for weeks.</p></div>
+
+    <h2 id="s2"><span class="n">2</span>Build the participation tracker</h2>
+    <p>One spreadsheet in <code>01 Master Tracker</code>. Ask Claude to build it, then check the column order by hand, because later instructions refer to these columns by name.</p>
+    <h3>Class Log tab</h3>
+    <p>Columns, in this order: <code>Date | Course | Case / Topic | Prepped | Spoke | Contribution Type | Impact (1-3) | What I said | Key takeaway | Concepts / Frameworks | Follow-ups | Cold-called | Question I still have</code></p>
+    <p>Add dropdown validation with exactly these values, because the task writes these strings and a mismatch silently breaks the dashboard:</p>
+    <ul>
+      <li><b>Prepped, Spoke, Cold-called:</b> Y, N</li>
+      <li><b>Impact:</b> 1, 2, 3</li>
+      <li><b>Contribution Type:</b> Opened the case, Built on someone, Countered a view, Analysis/numbers, Reframed the question, Personal experience, Closed/synthesized, Did not speak</li>
+    </ul>
+    <p>The contribution types are the most useful part. They show you whether you've been making the same kind of comment all semester. People from banking or consulting often find most of their comments are Analysis/numbers, while professors tend to reward countering a view and synthesizing what others said.</p>
+    <p>Keep <b>What I said</b> and <b>Key takeaway</b> as separate columns: one is your contribution, the other is what you learned.</p>
+    <h3>Other tabs</h3>
+    <ul>
+      <li><b>Takeaways Index:</b> <code>Date | Course | Concept | In one line | When it applies | Source case | Exam-worthy | Recruiting story?</code>. Flag the last column whenever a concept would make a good interview answer for the roles you want.</li>
+      <li><b>Assignments:</b> <code>Course | Assignment | Type | Assigned | Due | Est. hours | Status | Priority | Days left | Notes</code>, with Days left as a formula. Fill it once from Canvas and reconcile it monthly.</li>
+      <li><b>Weekly Review:</b> sessions, times spoke, courses you didn't speak in, what worked, what to fix, focus for next week. Let the task fill everything except what worked and what to fix; those two are yours.</li>
+      <li><b>Dashboard:</b> per course, sessions logged, times spoke, last spoke, and sessions since you last spoke. Use sessions, not calendar days: a goal like "speak every two or three classes" is counted in sessions, and a course that hasn't met for a week shouldn't look urgent.</li>
+    </ul>
+    <p class="muted">Participation expectations differ by course. Many want you to contribute regularly but not every class, so others get a chance. The dashboard is for pacing yourself, not for speaking as often as possible.</p>
+
+    <h2 id="s3"><span class="n">3</span>One running notes doc per course</h2>
+    <p>One Word file per course at <code>02 Courses\&lt;COURSE&gt;\&lt;COURSE&gt; - Running Class Notes.docx</code>. The spreadsheet holds the structured half; this holds the narrative half.</p>
+    <ul>
+      <li>One <b>Entries</b> heading at the top, newest entry first, each dated <code>YYYY-MM-DD — Class N: &lt;Case&gt;</code>.</li>
+      <li>Your own notes go first, under <b>My notes</b>. Official content goes below, under <b>From Canvas</b>, quoting the wrap slides.</li>
+      <li>Tell the task in writing that it never overwrites what you wrote. The gap between what you took from a class and what the professor said it was about is the most useful thing in the doc.</li>
+    </ul>
+    <div class="callout tip"><p><b>Two technical notes worth writing into your context file now.</b> Have the task check for a duplicate Entries heading and merge before adding. And if Word headings fail with <code>KeyError: no style with name 'Heading 2'</code>, the fix is to copy an existing paragraph of the right style and change its text, rather than adding a new one by style name.</p></div>
+
+    <h2 id="s4"><span class="n">4</span>Connect your laptop and browser</h2>
+    <h3>The laptop</h3>
+    <ol>
+      <li>Install the Claude desktop app on the machine with your school folder and sign in.</li>
+      <li>Give it access to two folders only: your school root and your Downloads folder. Downloads matters because browser downloads land there and the task has to pick them up.</li>
+      <li>Leave file deletion off. Tell the task in its context file to move anything it wants removed into a <code>_to_delete</code> folder and report it, because a scheduled run has nobody to answer a permission prompt.</li>
+    </ol>
+    <h3>The browser</h3>
+    <ol>
+      <li>Install Claude in Chrome and allow it on hbs.instructure.com and 12Twenty.</li>
+      <li>Sign in to both in that Chrome profile and stay signed in.</li>
+      <li><b>Move any exported password file off the laptop.</b> The extension can see your browser and your Downloads folder. Name any file it must never read in the context file.</li>
+    </ol>
+
+    <h2 id="s5"><span class="n">5</span>Find where each professor posts</h2>
+    <p>Open each course in Canvas and copy the number in the URL: <code>…/courses/12345</code> means the course ID is 12345. Put every ID in the context file.</p>
+    <p>The task uses these Canvas endpoints, called from a signed-in tab (replace <code>&lt;id&gt;</code> with a course ID):</p>
+<pre>/api/v1/courses/&lt;id&gt;/files?per_page=100&amp;sort=created_at&amp;order=desc
+/api/v1/courses/&lt;id&gt;/files/&lt;file_id&gt;/download?download_frd=1
+/api/v1/courses/&lt;id&gt;/assignments?per_page=100
+/api/v1/courses/&lt;id&gt;/pages?per_page=100&amp;sort=updated_at&amp;order=desc</pre>
+    <p><b>Then spend 20 minutes checking where each course actually posts.</b> This is the step people skip, and it costs the most. A scan that only looks at files posted in the last day misses three whole categories:</p>
+    <ul>
+      <li><b>Course Pages instead of Files.</b> Some courses post wraps, problem sets and solutions on Canvas Pages, which the Files list doesn't show.</li>
+      <li><b>Attachments on the assignment.</b> Some attach the post-class deck to the class's own assignment page.</li>
+      <li><b>Bulk uploads before term.</b> Some upload a whole term's summaries in one go before classes start. A one-day window never sees them.</li>
+    </ul>
+    <p>Write the general rule into your context file: <i>when a course's notes look thin, compare that course's entire Canvas file list against what's on disk, rather than assuming the course posts nothing.</i></p>
+    <p class="muted">If your cases come through Harvard Business Publishing, the assignment page carries a coursepack link. Opened in your signed-in Chrome, it leads to the case PDF, which the task can save and read. Expect a few cases to fail where the PDF is scanned images.</p>
+
+    <h2 id="s6"><span class="n">6</span>Write the context file</h2>
+    <p>Create <code>00 Start Here\Claude Context.md</code>. This is the most valuable file in the system: every run reads it first, and anything in it overrides the task prompt. Without it, every run rediscovers the same things and repeats the same mistakes.</p>
+    <p>Sections to include:</p>
+    <ul>
+      <li><b>Who and what:</b> your section, your courses, when classes end, what you're recruiting for.</li>
+      <li><b>Where everything lives:</b> the folder layout, and a line naming any old copy to ignore.</li>
+      <li><b>Tracker schema:</b> the exact columns and dropdown values.</li>
+      <li><b>Running notes convention:</b> the heading rules and the Word workaround.</li>
+      <li><b>The skills:</b> what each is for (step 7).</li>
+      <li><b>Study notes format:</b> this becomes the longest section over time.</li>
+      <li><b>Course AI policies:</b> what each course permits.</li>
+      <li><b>Canvas:</b> course IDs, endpoints, and where each professor posts.</li>
+      <li><b>Recruiting:</b> your filter, and the rule that it never registers you for anything.</li>
+      <li><b>Gotchas:</b> every problem you hit, written down the day you hit it.</li>
+      <li><b>Current state:</b> what's been logged and backfilled, open items.</li>
+    </ul>
+    <div class="callout"><p><b>The habit that makes this work:</b> when you correct the agent, write the correction into this file in the same session, with the date. A correction left in a chat is gone when the chat ends, and dated entries let a fresh run tell which rule is current when two seem to conflict.</p></div>
+
+    <h2 id="s7"><span class="n">7</span>Create the two skills</h2>
+    <p>A skill is a folder with a <code>SKILL.md</code> file of instructions Claude loads when a task matches. Ask Claude to write each one and save it. Keep the method in the skills and the task prompt short; when you want to change how notes are written, edit the skill, not the prompt.</p>
+    <h3>Skill one: pull from Canvas</h3>
+    <p>This one does no analysis. It fetches an assignment and its materials, and it reports what it couldn't get rather than filling gaps.</p>
+<pre class="wrap">---
+name: canvas-pull
+description: Pull an HBS assignment, its questions word for word, and its materials from Canvas for a given course and date.
+---
+1. Find the assignment for the course and date. Class assignments are usually titled "Class N: &lt;Case&gt;" and are due at class start, so today's may have moved to Past Assignments.
+2. Capture, word for word: the case title, the framing paragraph, every assignment question in order, any notes on calculations, and the full materials list.
+3. Download the materials in batches of fewer than ten and save them to the case folder.
+4. Report what was found and, explicitly, what could not be retrieved.
+
+Rules
+- Quote questions exactly. Never paraphrase, and never reconstruct them from memory of a similar case.
+- If the assignment isn't posted, say so and stop. Never substitute another assignment.
+- List every exhibit or file that couldn't be opened, so the notes don't treat it as missing information.</pre>
+    <h3>Skill two: study notes</h3>
+    <p>This one runs the first skill, then writes the notes. Start it with this structure and let your own corrections reshape it.</p>
+<pre class="wrap">---
+name: study-notes
+description: Write study notes for an HBS case, for checking my own reading after I've prepared. Never a substitute for reading the case.
+---
+Structure
+1. Title, and the case in one line: the decision and who is deciding.
+2. Key terms the session runs on, one line each.
+3. Each assignment question, word for word and in order. Under each:
+   - the facts and figures the question turns on, each with its page or exhibit cited
+   - any arithmetic, one step per line, every number cited, with a plain sentence first saying why the calculation is being run
+   - the strongest argument on each side
+4. Questions to bring to class.
+
+Rules
+- These are notes to check my thinking. Never write anything I would submit, and follow the course's AI policy.
+- Every sentence carries a fact. Cut commentary, restatement and flourish.
+- If a stated figure can't be reproduced from the numbers beside it, the arithmetic wins: flag it.
+- A file that couldn't be opened is not a number the case doesn't state. Name the missing input; never assume a value.</pre>
+
+    <h2 id="s8"><span class="n">8</span>Create the one scheduled task</h2>
+    <p>In the Claude desktop app, start a new chat, paste the prompt below with your details filled in, and ask: <i>"Schedule this to run on this computer every weekday at 1:00 pm."</i> Pick a time about 30 minutes after your last class. If your schedule is set in UTC, it shifts by an hour when daylight saving ends.</p>
+    <div class="copyrow"><b>Task prompt</b><button type="button" id="copyBtn">Copy</button><span id="copyMsg"></span></div>
+<pre class="wrap" id="prompt">You are my HBS study assistant. This runs every weekday after my last class.
+FIRST read [ROOT]\00 Start Here\Claude Context.md. Anything in it overrides this prompt.
+Work only inside [ROOT]. Never delete files: move anything to remove into a _to_delete folder and tell me. If my files can't be reached, say so in one line and stop; retry once at most.
+
+1. CANVAS. If Canvas asks me to sign in, stop and tell me. Open a fresh Chrome tab. For each course in the context file, find files created in the last 26 hours, and also check course Pages and the assignment pages for post-class attachments. Download in batches of fewer than ten and file each in the right folder. Add each wrap to the course's running notes doc as a dated entry under From Canvas, quoting the slides. Add genuinely new concepts to the Takeaways Index.
+
+2. TODAY'S LOG. Check the Class Log against today's classes. If I had class and there's no row, ask me in ONE line what I said. Never invent entries. If I stayed quiet, log the row with Spoke = N, or the dashboard will flatter me. My read of how a comment landed overrides yours.
+
+3. TOMORROW'S CASES. For each of tomorrow's classes, use the study-notes skill. Follow the skill; don't improvise the format. If tomorrow's assignment isn't posted, say so and skip that course; never substitute the previous session's case. Name the one class to aim to speak in tomorrow, using the dashboard and my goal for each course, and say plainly if my contribution types are skewing one way.
+
+4. RECRUITING. Check 12Twenty for new events matching: [YOUR FOCUS]. Don't flag: [YOUR EXCLUSIONS]. Update 05 Recruiting\Watchlist.md and report only what's new plus any registration deadline within 3 days. Never register me for anything; that needs my go-ahead for each event, every time.
+
+5. FRIDAYS ONLY. Add a Weekly Review row: classes, times I spoke, courses I didn't speak in, contribution-type mix, and one target for next week. Leave "what worked" and "what to fix" blank for me.
+
+6. FIRST RUN OF EACH MONTH. Write a takeaways digest: concepts grouped by theme rather than course, where courses contradict each other, the five most likely to appear on a final, and which courses look thin, saying whether that's the course or the logging.
+
+FINISH with ONE push message under 150 words: the notes written and for which cases, tomorrow's target class, anything new in recruiting, and the single thing you need from me. Bullets, complete sentences. If nothing happened and nothing is needed, send nothing.</pre>
+    <p><b>Three lines are load-bearing; don't cut them.</b> "Never invent entries": a made-up log row is worse than a gap, because you'll trust it later. "Log quiet classes": without them every course looks fine. "Never register me": the task runs while you're elsewhere, and anything you can't undo needs you each time.</p>
+
+    <h2 id="s9"><span class="n">9</span>Log class in one line</h2>
+    <p>The task handles everything that can happen without you. The participation log can't, because only you know what you said and how it landed.</p>
+    <p>Keep one ongoing chat for this and message it right after class. A messy sentence is the whole input: <i>"spoke in STRAT about demand vs capacity, what would you have to believe, landed ok."</i> Claude turns it into a Class Log row, a Takeaways Index entry where it earns one, and an entry in the course notes doc.</p>
+    <ul>
+      <li><b>Your read overrides Claude's.</b> If you say a comment was thin, it scores down. You were in the room.</li>
+      <li><b>One chat, not one per class.</b> Fewer places to check is what keeps you using it.</li>
+      <li><b>Silence is data.</b> Classes where you said nothing make the dashboard honest. Let the task backfill them from the Canvas assignment list.</li>
+      <li>Photos of handwritten notes can go to the same chat, to be transcribed into the course doc under their own heading, with illegible words marked unclear rather than guessed.</li>
+    </ul>
+
+    <h2 id="gotchas">Things that go wrong</h2>
+    <p>Each of these costs at least an hour the first time. Put them in your context file on day one.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr></thead>
+      <tbody>
+        <tr><td>Every course looks on track when you know you've gone quiet</td><td>Classes you didn't report have no row</td><td>Backfill Spoke = N rows from the Canvas assignment list</td></tr>
+        <tr><td>Dashboard cells show blank in Excel or on your phone</td><td>The spreadsheet library keeps formulas but drops their computed values</td><td>Have Claude recalculate the file (for example through LibreOffice) before saving</td></tr>
+        <tr><td>Dashboard counts are wrong for no visible reason</td><td>Dates saved as text</td><td>Write dates as real dates, never strings</td></tr>
+        <tr><td>One course has almost nothing filed</td><td>It posts on Pages, in assignment attachments, or uploaded everything before term</td><td>Compare its whole Canvas file list with what's on disk</td></tr>
+        <tr><td>Downloads stop partway</td><td>Chrome throttles past about ten files</td><td>Batches under ten, or the course's download-as-zip</td></tr>
+        <tr><td>Screenshots time out and pages stop responding</td><td>An old browser tab froze</td><td>Open a fresh tab at the start of every run</td></tr>
+        <tr><td>The run can't reach your files</td><td>The laptop was asleep or the app was closed</td><td>Keep it awake around the run time; retry once, then stop</td></tr>
+        <tr><td>The recruiting scan is signed out most days</td><td>12Twenty's session expires in under a day</td><td>Sign in before the run, or treat the scan as best effort. Never let the agent sign in for you.</td></tr>
+        <tr><td>Your notes doc has entries in two places</td><td>Two runs each created their own Entries heading</td><td>Tell the task to check for a duplicate and merge first</td></tr>
+        <tr><td>A number in the notes is confidently wrong</td><td>An exhibits file failed to download and a value was assumed</td><td>The rule above: a file you couldn't open is not a number the case doesn't state</td></tr>
+      </tbody>
+    </table></div>
+    <p class="muted">That last one deserves attention. A missing exhibits spreadsheet can lead the notes to say a figure "isn't stated in the case" and assume one. If the assumed number is wrong, it runs through every calculation and can flip the conclusion. The failure isn't the download; it's reporting an unopened file as an absent fact.</p>
+
+    <h2 id="iterate">How to iterate</h2>
+    <p>Expect the first few weeks of notes to be too long, too padded, or not in your voice. The fix is a loop, and the loop is the real work.</p>
+    <ul>
+      <li><b>Edit one set of notes by hand, then hand it back.</b> Cut what you wouldn't use, reorder what's in the wrong place, rewrite one section the way you want it. Then give it back and say: "this is the structure; write the spec that produces it into the skill and the context file." Editing by hand beats describing in the abstract.</li>
+      <li><b>Write every correction down the day you make it</b>, dated, with the reason. When two rules conflict, the dated one wins.</li>
+      <li><b>Expect to reverse yourself.</b> You'll add a section, use it once, and remove it. That's normal, as long as the removal is written down as clearly as the request was.</li>
+      <li><b>Length isn't the control; filler is.</b> Asking for "shorter" gets the same padding in fewer words. The rule that works is per sentence: every sentence carries a fact, and anything that comments on the answer instead of giving it gets cut.</li>
+    </ul>
+
+    <h2 id="limits">Honest limits</h2>
+    <ul>
+      <li><b>It doesn't write anything you submit.</b> Graded work stays yours, and course AI policies come first.</li>
+      <li><b>It can't tell you how a comment landed.</b> It logs what you said and counts the pattern; the judgment is yours.</li>
+      <li><b>The notes don't replace reading the case.</b> If you haven't read it, a professor will find out in one follow-up question.</li>
+      <li><b>It only sees what gets posted.</b> A course that posts little gives you a thin folder however good the system is.</li>
+      <li><b>Reliability is real but not total.</b> Expect roughly one run in five to be partly degraded. Build it so a degraded run says what it couldn't do rather than failing silently.</li>
+    </ul>
+    <div class="callout tip"><p><b>Start with the tracker and the context file; let the automation come second.</b> The automation is the easy half. The hard half is deciding what's worth tracking, and that only becomes clear after a couple of weeks of logging by hand.</p></div>
+  </main>
+</div>
+
+<footer>
+  <span>Part of <a href="/">Automating HBS</a> by Jamie Friedman, HBS MBA 2028.</span>
+</footer>
+
+<script>
+document.getElementById('copyBtn').addEventListener('click', function () {
+  var pre = document.getElementById('prompt'), msg = document.getElementById('copyMsg');
+  function select() { var r = document.createRange(); r.selectNodeContents(pre); var s = getSelection(); s.removeAllRanges(); s.addRange(r); msg.textContent = 'Selected. Press Ctrl+C or ⌘C.'; }
+  try { navigator.clipboard.writeText(pre.textContent).then(function () { msg.textContent = 'Copied.'; }, select); } catch (e) { select(); }
+});
+</script>
+</body>
+</html>
