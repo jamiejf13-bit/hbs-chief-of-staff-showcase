@@ -82,12 +82,20 @@ figure{margin:28px 0 0}
 a.shot:hover{border-color:var(--ink-3)}
 figcaption{font-size:13.5px;color:var(--ink-3);margin-top:10px;max-width:80ch}
 
-/* the five systems */
-.systems{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:4px;overflow:hidden;margin-top:24px}
-.systems div{background:var(--card);padding:14px 14px 16px;min-width:0}
-.systems b{display:block;font-size:14px}
-.systems span{display:block;font-size:13px;color:var(--ink-3);margin-top:3px}
-@media (max-width:760px){.systems{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* the six systems, in three groups */
+.groups{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:24px}
+.group{border:1px solid var(--rule);border-top:3px solid var(--c);border-radius:4px;background:var(--card);padding:16px 16px 6px;min-width:0}
+.group h3{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--c);margin:0 0 10px}
+.group div{padding:10px 0;border-top:1px solid var(--rule-2)}
+.group b{display:block;font-size:15px}
+.group span{display:block;font-size:13.5px;color:var(--ink-3);margin-top:2px}
+@media (max-width:760px){.groups{grid-template-columns:1fr}}
+.also{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:4px;overflow:hidden;margin-top:14px}
+.also div{background:var(--card);padding:14px;min-width:0}
+.also b{display:block;font-size:14.5px}
+.also span{display:block;font-size:13.5px;color:var(--ink-2);margin-top:3px}
+@media (max-width:860px){.also{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:480px){.also{grid-template-columns:1fr}}
 
 /* tips */
 .tip-head{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:start}
@@ -159,8 +167,8 @@ footer .sp{flex:1}
 <main>
   <div class="hero wide">
     <p class="eyebrow">A project from my first year at Harvard Business School</p>
-    <h1>I automated the admin of business school. <em>Then I taught my section to.</em></h1>
-    <p class="lede">Over my first semester I taught myself to hand most of the small, recurring admin in my life to AI agents: filing class materials, prepping for cases, tracking recruiting, triaging two inboxes.</p>
+    <h1>I automated the admin of business school. <em>Then I taught my classmates to.</em></h1>
+    <p class="lede">Life gets busy at HBS. To make the most of my time, I automated as many of my tasks as possible, handing the small, recurring admin to AI agents: filing class materials, prepping for cases, tracking recruiting, triaging two inboxes.</p>
     <p class="lede">Friends kept asking how, so I built a website that teaches them a few of the most helpful tasks, from a simple daily study run anyone can set up to the full Chief of Staff I use every day.</p>
     <p class="byline"><b>Jamie Friedman</b> · HBS MBA 2028 · built with Claude Code and Claude in Chrome, fall 2026</p>
     <div class="ctas">
@@ -171,15 +179,19 @@ footer .sp{flex:1}
 
   <section class="wide" id="problem">
     <div class="narrow">
-      <h2>Why: the admin is spread across five systems</h2>
-      <p class="muted">An HBS first year runs six courses with a case almost every day while recruiting for a summer internship. What you need to plan a single day lives in five places that don't talk to each other, and two of them sit behind university sign-on with no API a student can use.</p>
+      <h2>Why: the admin is spread across six systems</h2>
+      <p class="muted">An HBS first year runs six courses with a case almost every day while recruiting for a summer internship. What you need to plan a single day lives in six places across school, personal life and recruiting. None of them talk to each other, and two sit behind university sign-on with no API a student can use.</p>
     </div>
-    <div class="systems">
-      <div><b>Canvas</b><span>Cases, problem sets and deadlines for six courses</span></div>
-      <div><b>HBS Outlook</b><span>Class schedule, section and club mail</span></div>
-      <div><b>12Twenty</b><span>Recruiting events and registrations</span></div>
-      <div><b>Gmail</b><span>Personal mail, newsletters, LinkedIn alerts</span></div>
-      <div><b>Google Calendar</b><span>Everything else in life</span></div>
+    <div class="groups">
+      <div class="group" style="--c:var(--strat)"><h3>School resources</h3>
+        <div><b>Canvas</b><span>Cases, problem sets and deadlines for six courses</span></div>
+        <div><b>HBS Outlook</b><span>Class schedule, section and club mail</span></div></div>
+      <div class="group" style="--c:var(--lead)"><h3>Personal life</h3>
+        <div><b>Gmail</b><span>Personal mail and newsletters</span></div>
+        <div><b>Google Calendar</b><span>Everything outside class</span></div></div>
+      <div class="group" style="--c:var(--rec)"><h3>Recruiting &amp; career</h3>
+        <div><b>12Twenty</b><span>Recruiting events and registrations</span></div>
+        <div><b>LinkedIn</b><span>Job alerts, roles and contacts</span></div></div>
     </div>
   </section>
 
@@ -225,17 +237,17 @@ footer .sp{flex:1}
         <p class="kicker" style="color:var(--strat)">The full system</p>
         <h2>An AI Chief of Staff: one page that runs my day</h2>
         <div class="tags"><span>Calendar</span><span>To-do list</span><span>Recruiting tracker</span><span>Two inboxes</span><span>News</span><span>Participation</span><span>AI agent</span></div>
-        <p class="muted">Everything from the five systems in one page I check from my phone between classes, with an agent that handles the routine work and never does anything I can't undo without my say-so. Below is the template version, running on made-up sample data.</p>
+        <p class="muted">Everything from the six systems in one page I check from my phone between classes, with an agent that handles the routine work and never does anything I can't undo without my say-so. Below is the template version, running on made-up sample data.</p>
       </div>
     </div>
 
     <div class="annot">
       <figure>
         <p class="label">View 1 · planning the day</p>
-        <a class="shot" href="images/console-top.png" target="_blank" rel="noopener" title="Open full size"><img src="images/console-top.png" width="2360" height="2220" alt="Top of the console on sample data: the date, the next class with a cold-call risk warning, the agent chat box, a week calendar with color-coded classes, new 12Twenty events and priority email tagged HBS or Gmail." loading="lazy"></a>
+        <a class="shot" href="images/console-top.png" target="_blank" rel="noopener" title="Open full size"><img src="images/console-top.png" width="2360" height="2222" alt="Top of the console on sample data: the date, the next class with the number of classes since I last spoke in it, the agent chat box, a week calendar with color-coded classes, new 12Twenty events and priority email tagged HBS or Gmail." loading="lazy"></a>
       </figure>
       <ol>
-        <li><span><b>Cold-call risk before every class</b>The next class, how long until it starts, and how many sessions since I last spoke in that course.</span></li>
+        <li><span><b>Tracking class participation</b>We're expected to participate as much as possible, but in many courses not every class, so others get a chance. Before each class it shows how many sessions since I last spoke there.</span></li>
         <li><span><b>An agent at the top</b>“Add a to-do to email my CPD advisor before Thursday” or “block two hours tomorrow for the case”, and it does it.</span></li>
         <li><span><b>One calendar</b>Day, week and month views merged from HBS Outlook and Google, color-coded by course.</span></li>
         <li><span><b>Recruiting events</b>New 12Twenty events matched to my targets, with one-tap sign-up that the laptop carries out.</span></li>
@@ -246,15 +258,21 @@ footer .sp{flex:1}
     <div class="annot">
       <figure>
         <p class="label">View 2 · getting it done</p>
-        <a class="shot" href="images/console-bottom.png" target="_blank" rel="noopener" title="Open full size"><img src="images/console-bottom.png" width="2360" height="3230" alt="Lower part of the console on sample data: a to-do list grouped by day with Prep, Case and Canvas links on class items, new roles to track, a Worth reading panel of newsletter headlines, recruiting deadlines, and a participation table showing sessions since last spoke per course." loading="lazy"></a>
+        <a class="shot" href="images/console-todo.png" target="_blank" rel="noopener" title="Open full size"><img src="images/console-todo.png" width="1572" height="1504" alt="The to-do list on sample data: tasks grouped by day, with FRC and STRAT case prep items carrying Prep, case, exhibits and Canvas links, alongside a 12Twenty sign-up, a problem set, an admin task and a coffee chat." loading="lazy"></a>
       </figure>
       <ol>
-        <li><span><b>Every Canvas assignment in one to-do list</b>Grouped by the day it's due, mixed with my own tasks, with a horizon so tonight's reading isn't buried.</span></li>
-        <li><span><b>Cases pulled into each class to-do</b>The case PDF link, exhibit files, the Canvas page and my prep notes attached right on the task.</span></li>
-        <li><span><b>A recruiting tracker</b>New roles from company job boards and LinkedIn alerts, sent to an internship tracker with statuses, deadlines and who I've spoken to.</span></li>
-        <li><span><b>Worth reading, twice a day</b>Headlines from the newsletters already in my inbox, matched to my interests and rebuilt morning and evening so the list holds still.</span></li>
-        <li><span><b>Classes since I last spoke</b>Per course, against my goal of speaking every two or three sessions, from the class log the daily run keeps.</span></li>
+        <li><span><b>Every Canvas assignment in one to-do list</b>Grouped by the day it's due, with a horizon so tonight's reading isn't buried under next month's.</span></li>
+        <li><span><b>Cases pulled into each class to-do</b>The case, exhibit files, the Canvas page and my prep notes are attached right on the task, so tomorrow's prep is one click.</span></li>
+        <li><span><b>School, recruiting and life in one list</b>12Twenty sign-ups, coffee chats and admin sit beside class prep, each tagged so I can filter to one kind.</span></li>
       </ol>
+    </div>
+
+    <div class="narrow" style="margin-top:40px"><h3>Also on the page</h3></div>
+    <div class="also">
+      <div><b>Recruiting tracker</b><span>New roles from job boards and LinkedIn alerts, sent to an internship tracker with statuses, deadlines and who I've spoken to.</span></div>
+      <div><b>Worth reading</b><span>Headlines from the newsletters already in my inbox, matched to my interests and rebuilt twice a day.</span></div>
+      <div><b>Participation by course</b><span>Sessions spoken in and since I last spoke, per course, from the class log the daily run keeps.</span></div>
+      <div><b>Recruiting deadlines</b><span>Sign-ups and applications due in the next ten days, flagged when they're inside 48 hours.</span></div>
     </div>
 
     <div class="narrow" style="margin-top:44px">
